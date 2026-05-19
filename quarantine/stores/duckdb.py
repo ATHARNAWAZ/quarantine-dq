@@ -146,8 +146,11 @@ class DuckDBStore(QuarantineStore):
                 "SELECT pipeline_name, COUNT(*) FROM quarantine_records GROUP BY pipeline_name"
             ).fetchall()
 
+            unresolved_where = (
+                f"{where} AND replay_status IS NULL" if where else "WHERE replay_status IS NULL"
+            )
             unresolved = con.execute(
-                f"SELECT COUNT(*) FROM quarantine_records {where} WHERE replay_status IS NULL",
+                f"SELECT COUNT(*) FROM quarantine_records {unresolved_where}",
                 params,
             ).fetchone()[0]
 

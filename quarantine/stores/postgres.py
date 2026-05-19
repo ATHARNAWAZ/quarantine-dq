@@ -134,8 +134,11 @@ class PostgresStore(QuarantineStore):
                 text("SELECT pipeline_name, COUNT(*) FROM quarantine_records GROUP BY pipeline_name")
             ).fetchall()
 
+            unresolved_where = (
+                f"{where} AND replay_status IS NULL" if where else "WHERE replay_status IS NULL"
+            )
             unresolved = con.execute(
-                text(f"SELECT COUNT(*) FROM quarantine_records {where} WHERE replay_status IS NULL"),
+                text(f"SELECT COUNT(*) FROM quarantine_records {unresolved_where}"),
                 params,
             ).scalar()
 
