@@ -1,0 +1,55 @@
+name: Quarantine gate
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  test-and-quarantine-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install 3.11
+
+      - name: Create virtual environment
+        run: uv venv
+
+      - name: Install dependencies
+        run: uv pip install -e ".[all,dev]"
+
+      - name: Run tests
+        run: uv run pytest tests/ -v --tb=short
+
+      - name: Check quarantine store for critical failures
+        run: |
+          uv run quarantine stats --fail-on-critical || {
+            echo "::error::Unresolved CRITICAL quarantine records detected. Fix or replay them before merging."
+            exit 1
+          }
+        env:
+          QUARANTINE_STORE_URL: "duckdb://.quarantine_ci.duckdb"
+
+      - name: Upload quarantine report
+        if: always()
+        run: |
+          uv run quarantine report --output quarantine_ci_report.md || true
+        env:
+          QUARANTINE_STORE_URL: "duckdb://.quarantine_ci.duckdb"
+
+      - name: Upload report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quarantine-report
+          path: quarantine_ci_report.md
+          if-no-files-found: ignore
