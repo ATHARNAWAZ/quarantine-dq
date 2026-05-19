@@ -1,0 +1,47 @@
+# quarantine_source.yml — template for dbt source definitions with quarantine rules
+# Copy this into your dbt project's models/ directory and adapt as needed.
+
+version: 2
+
+sources:
+  - name: raw_orders
+    description: Raw orders data from the ingestion layer
+    database: "{{ env_var('DBT_DATABASE', 'analytics') }}"
+    schema: raw
+
+    tables:
+      - name: orders
+        description: Raw order records before transformation
+        columns:
+          - name: order_id
+            description: Unique order identifier
+            tests:
+              - not_null
+              - unique
+              - quarantine_test:
+                  test_name: not_null
+                  severity: warn
+
+          - name: customer_id
+            description: Customer reference
+            tests:
+              - not_null
+              - quarantine_test:
+                  test_name: not_null
+                  severity: warn
+
+          - name: revenue
+            description: Order revenue in USD
+            tests:
+              - quarantine_test:
+                  test_name: accepted_values
+                  severity: warn
+
+          - name: status
+            description: Order status
+            tests:
+              - accepted_values:
+                  values: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled']
+              - quarantine_test:
+                  test_name: accepted_values
+                  severity: warn
