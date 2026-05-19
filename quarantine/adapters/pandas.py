@@ -56,8 +56,14 @@ def quarantine_dataframe(
     clean_indices = []
     quarantine_rows = []
 
+    import math
+
     for idx, row in df.iterrows():
-        record = row.to_dict()
+        # Normalize pandas NaN to None so rules engine can detect null violations
+        record = {
+            k: (None if (isinstance(v, float) and math.isnan(v)) else v)
+            for k, v in row.to_dict().items()
+        }
         violations = engine.validate(record)
 
         if violations:

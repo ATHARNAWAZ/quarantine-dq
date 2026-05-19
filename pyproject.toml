@@ -30,13 +30,13 @@ dependencies = [
 [project.optional-dependencies]
 postgres = ["psycopg2-binary>=2.9"]
 spark = ["pyspark>=3.3"]
-airflow = ["apache-airflow>=2.6"]
 llm = ["anthropic>=0.25"]
 api = ["fastapi>=0.100", "uvicorn>=0.22", "httpx>=0.24"]
 dev = [
     "pytest>=7.0",
     "pytest-cov>=4.0",
     "httpx>=0.24",
+    "pandas>=1.5",
 ]
 all = ["quarantine-dq[postgres,llm,api]"]
 
