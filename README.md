@@ -51,15 +51,17 @@ Every data pipeline has two default failure modes: **crash** or **silently drop*
 ## Install
 
 ```bash
-pip install quarantine-dq
+pip install "git+https://github.com/ATHARNAWAZ/quarantine-dq.git"
 ```
+
+Not on PyPI yet; install straight from GitHub.
 
 With optional extras:
 ```bash
-pip install "quarantine-dq[postgres]"   # PostgreSQL backend
-pip install "quarantine-dq[llm]"        # LLM-enhanced failure classification
-pip install "quarantine-dq[api]"        # FastAPI REST dashboard
-pip install "quarantine-dq[all]"        # everything
+pip install "quarantine-dq[postgres] @ git+https://github.com/ATHARNAWAZ/quarantine-dq.git"   # PostgreSQL backend
+pip install "quarantine-dq[llm] @ git+https://github.com/ATHARNAWAZ/quarantine-dq.git"        # LLM-enhanced failure classification
+pip install "quarantine-dq[api] @ git+https://github.com/ATHARNAWAZ/quarantine-dq.git"        # FastAPI REST dashboard
+pip install "quarantine-dq[all] @ git+https://github.com/ATHARNAWAZ/quarantine-dq.git"        # everything
 ```
 
 ---
@@ -234,7 +236,7 @@ Full workflow: [.github/workflows/quarantine_gate.yml](.github/workflows/quarant
 
 ## Optional: LLM-enhanced failure classification
 
-With `pip install "quarantine-dq[llm]"`, the rules engine can optionally route `UNKNOWN` failures through Claude for richer remediation suggestions. LLM usage is always opt-in — the base package is 100% offline.
+With `pip install "quarantine-dq[llm] @ git+https://github.com/ATHARNAWAZ/quarantine-dq.git"`, the rules engine can optionally route `UNKNOWN` failures through Claude for richer remediation suggestions. LLM usage is always opt-in — the base package is 100% offline.
 
 ---
 
